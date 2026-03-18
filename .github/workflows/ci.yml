@@ -6,8 +6,9 @@ on:
 
 jobs:
   push:
-
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.tag.outputs.tag }}
 
     steps:
     - name: checkout
@@ -19,16 +20,27 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: extract metadata
-      id: meta
-      uses: docker/metadata-action@v6.0.0
-      with:
-        images: spaul76/simple-app
-        
+    - name: generate image tag
+      id: tag
+      run: echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT
+      
     - name: build and push
       uses: docker/build-push-action@v7.0.0
       with:
         push: true
-        context: .
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        context: ./app/
+        tags: ${{ steps.tag.outputs.tag }}
+       
+  deploy:
+    runs-on: self-hosted
+    name: deploy
+    needs: push
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6.0.2
+      
+    - name: deploy with helm
+      env: 
+        KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      run: helm upgrade app app_chart --namespace dev --set deployment.pod.container.tag=${{ needs.push.outputs.image-tag }}

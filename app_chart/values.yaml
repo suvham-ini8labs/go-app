@@ -1,0 +1,33 @@
+namespace: dev 
+
+deployment:
+  replicaCount: 1
+
+  pod:
+    container:
+      registry: spaul76
+      repository: simple-app
+      tag: "1.0"
+      imagePullPolicy: IfNotPresent
+      containerPort: 8080
+
+    labels:
+      pod: go-app
+
+ingress:
+  ingressClassName: nginx
+  rules:
+  - host: virtual-swan.webhop.me
+    paths:
+    - path: /
+      pathType: Prefix
+      backend:
+        servicePort: 80
+
+service:
+  type: ClusterIP 
+  labels:
+    service: go-app
+
+  port: 80
+  targetPort: 8080
