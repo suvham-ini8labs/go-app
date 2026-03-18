@@ -45,9 +45,8 @@ jobs:
         mkdir .kube
         touch .kube/config
         echo "${{ secrets.KUBECONFIG }}" > .kube/config
-        KUBECONFIG=.kube/config
 
     - name: deploy with helm
       env: 
-        KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        KUBECONFIG: .kube/config
       run: helm upgrade app app_chart --namespace dev --set deployment.pod.container.tag=${{ needs.push.outputs.image-tag }}
