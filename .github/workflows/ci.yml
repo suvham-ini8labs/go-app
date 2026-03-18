@@ -39,7 +39,14 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v6.0.2
-      
+
+    - name: save kubeconfig
+      run: |
+        mkdir .kube
+        touch .kube/config
+        echo ${{ secrets.KUBECONFIG }} > .kube/config
+        KUBECONFIG=.kube/config
+
     - name: deploy with helm
       env: 
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
