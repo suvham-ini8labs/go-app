@@ -22,7 +22,7 @@ jobs:
 
     - name: generate image tag
       id: tag
-      run: echo "tag=${{ github.run_number }}" >> $GITHUB_OUTPUT
+      run: echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
       
     - name: build and push
       uses: docker/build-push-action@v7.0.0
