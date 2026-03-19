@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  push:
+  build:
     runs-on: ubuntu-latest
     outputs:
       image-tag: ${{ steps.tag.outputs.tag }}
@@ -34,7 +34,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     name: deploy
-    needs: push
+    needs: build 
 
     steps:
     - name: checkout code
@@ -49,4 +49,4 @@ jobs:
     - name: deploy with helm
       env: 
         KUBECONFIG: .kube/config
-      run: helm upgrade app app_chart --namespace dev --set deployment.pod.container.tag=${{ needs.push.outputs.image-tag }}
+      run: helm upgrade app app_chart --namespace dev --set deployment.pod.container.tag=${{ needs.build.outputs.image-tag }}
