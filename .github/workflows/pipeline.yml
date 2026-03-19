@@ -16,6 +16,9 @@ jobs:
 
     - name: setup docker
       uses: docker/setup-docker-action@v5
+      with:
+        version: latest
+        rootless: true
 
     - name: docker login
       uses: docker/login-action@v4.0.0
