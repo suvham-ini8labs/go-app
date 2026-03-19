@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: cicd
 
 on:
   push:
@@ -6,13 +6,16 @@ on:
 
 jobs:
   push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       image-tag: ${{ steps.tag.outputs.tag }}
 
     steps:
-    - name: checkout
+    - name: checkout code
       uses: actions/checkout@v6.0.2
+
+    - name: setup docker
+      uses: docker/setup-docker-action@v5
 
     - name: docker login
       uses: docker/login-action@v4.0.0
@@ -37,7 +40,7 @@ jobs:
     needs: push
 
     steps:
-    - name: checkout
+    - name: checkout code
       uses: actions/checkout@v6.0.2
 
     - name: save kubeconfig
